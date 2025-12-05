@@ -3,6 +3,10 @@
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/translations';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function HandwrittenMessage() {
   const t = useTranslation();
@@ -109,14 +113,14 @@ export default function HandwrittenMessage() {
   return (
     <section 
       id="message" 
-      className="py-20 md:py-28 bg-gradient-to-b from-background to-accent/5 select-none overflow-hidden"
+      className="relative py-20 px-4 md:py-32 bg-gradient-to-b from-transparent via-accent/5 to-transparent select-none overflow-hidden"
       style={{
-        clipPath: 'polygon(0 3%, 100% 0%, 100% 97%, 0% 100%)',
+        clipPath: 'polygon(0 0%, 100% 5%, 100% 100%, 0% 95%)',
       }}
     >
-      <div className="max-w-5xl mx-auto px-4 w-full">
+      <div className="max-w-6xl mx-auto w-full">
         <motion.div 
-          className="text-center mb-12"
+          className="text-center mb-16"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
@@ -137,77 +141,95 @@ export default function HandwrittenMessage() {
           <div className="w-24 h-1 bg-accent mx-auto"></div>
         </motion.div>
         
-        <motion.div 
-          className="bg-card/60 backdrop-blur-sm border border-accent/20 rounded-2xl shadow-xl p-6 sm:p-8 md:p-10"
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: '-50px' }}
-          transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
-        >
-          <form onSubmit={sendEmail} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {/* Left side: Textarea */}
-            <div className="md:col-span-1">
-              <textarea
-                value={writtenText}
-                onChange={(e) => setWrittenText(e.target.value)}
-                placeholder={t('writeYourMessage')}
-                rows={10}
-                className="w-full px-5 py-4 bg-background/80 border-2 border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-colors resize-none text-foreground placeholder:text-muted-foreground"
-                required
-              />
-            </div>
-
-            {/* Right side: Name and Actions */}
-            <div className="md:col-span-1 flex flex-col justify-between">
-              <div className="mb-6">
-                <label htmlFor="name-input" className="sr-only">{t('yourName')}</label>
-                <input
-                  id="name-input"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder={t('yourName')}
-                  className="w-full px-5 py-4 bg-background/80 border-2 border-accent/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent/50 focus:border-transparent transition-colors text-foreground placeholder:text-muted-foreground"
+        <div className="max-w-5xl mx-auto">
+          <motion.div 
+            className="relative bg-gradient-to-br from-card/95 via-card/90 to-accent/10 backdrop-blur-sm border-4 border-accent/40 p-6 sm:p-8 md:p-12 shadow-2xl"
+            initial={{ opacity: 0, scale: 0.98 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: '-50px' }}
+            transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
+            style={{
+              clipPath: 'polygon(8% 0%, 92% 0%, 100% 8%, 100% 92%, 92% 100%, 8% 100%, 0% 92%, 0% 8%)',
+            }}
+          >
+            <form onSubmit={sendEmail} className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {/* Left side: Textarea */}
+              <div className="md:col-span-1 flex flex-col gap-3">
+                <label
+                  htmlFor="message-input"
+                  className="block text-sm font-medium text-muted-foreground text-left"
+                >
+                  {t('yourMessage')}
+                </label>
+                <Textarea
+                  id="message-input"
+                  value={writtenText}
+                  onChange={(e) => setWrittenText(e.target.value)}
+                  placeholder={t('writeYourMessage')}
+                  rows={10}
+                  className="min-h-[220px] bg-background/80"
                   required
                 />
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-                <button
-                  type="button"
-                  onClick={() => setWrittenText('')}
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-foreground bg-secondary rounded-lg hover:bg-secondary/80 transition-colors font-medium disabled:opacity-60"
-                  disabled={isSending || !writtenText.trim()}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                  {t('clearDrawing')}
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 flex items-center justify-center gap-2 px-6 py-3 text-white bg-accent rounded-lg hover:bg-accent/90 disabled:opacity-60 transition-colors font-semibold"
-                  disabled={isSending}
-                >
-                  {isSending ? (
-                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-                  )}
-                  {isSending ? t('sendingMessage') : t('sendMessage')}
-                </button>
-              </div>
-            </div>
 
-            {message.text && (
-              <div className={`md:col-span-2 mt-4 p-4 rounded-lg text-center ${
-                message.type === 'error' ? 'bg-red-100 text-red-800 border border-red-200' : 
-                message.type === 'info' ? 'bg-blue-100 text-blue-800 border border-blue-200' : 
-                'bg-green-100 text-green-800 border border-green-200'
-              }`}>
-                {message.text}
+              {/* Right side: Name and Actions */}
+              <div className="md:col-span-1 flex flex-col justify-between gap-4">
+                <div>
+                  <label
+                    htmlFor="name-input"
+                    className="block text-sm font-medium text-muted-foreground mb-2 text-left"
+                  >
+                    {t('yourName')}
+                  </label>
+                  <Input
+                    id="name-input"
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t('yourName')}
+                    className="h-11 bg-background/80"
+                    required
+                  />
+                </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4 mt-auto">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex-1 justify-center"
+                    onClick={() => setWrittenText('')}
+                    disabled={isSending || !writtenText.trim()}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    {t('clearDrawing')}
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="flex-1 justify-center bg-accent text-white hover:bg-accent/90 disabled:opacity-60 text-base md:text-lg"
+                    disabled={isSending}
+                  >
+                    {isSending ? (
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                    )}
+                    {isSending ? t('sendingMessage') : t('sendMessage')}
+                  </Button>
+                </div>
               </div>
-            )}
-          </form>
-        </motion.div>
+
+              {message.text && (
+                <div className="md:col-span-2 mt-4">
+                  <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
+                    <AlertDescription>
+                      {message.text}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
+            </form>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
